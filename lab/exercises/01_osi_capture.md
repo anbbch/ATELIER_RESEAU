@@ -160,7 +160,6 @@ Commande utilisé : python3 osi_inspect.py 1
 <img width="2042" height="878" alt="image" src="https://github.com/user-attachments/assets/a59a967d-0b54-46af-a05c-912ca9134c4c" />
 
 > 💬 **Votre réponse (sorties du script + analyse) :**
->
 > Voir au dessus
 
 ## À rendre — répondez directement dans ce fichier
@@ -215,9 +214,9 @@ rôle de la couche session, et expliquez pourquoi ils sont implémentés
 
 > 💬 **Votre réponse :**
 >  1. Connection: keep-alive maintient la connexion TCP ouverte entre plusieurs requêtes HTTP, évitant un nouveau handshake à chaque fois → rôle de maintien de session.
-2. Les cookies HTTP permettent de reprendre une "session utilisateur" entre des requêtes distinctes (authentification, panier...) → rôle d'identification et de reprise de session.
-
-Ils sont implémentés plus haut (L7) car TCP/IP n'a pas de couche session native : la suite Internet a été conçue avec seulement 4 couches, et les concepteurs d'applications ont dû gérer eux-mêmes la continuité de session au niveau applicatif.
+>  2. Les cookies HTTP permettent de reprendre une "session utilisateur" entre des requêtes distinctes (authentification, panier...) → rôle d'identification et de reprise de session.
+>
+> Ils sont implémentés plus haut (L7) car TCP/IP n'a pas de couche session native : la suite Internet a été conçue avec seulement 4 couches, et les concepteurs d'applications ont dû gérer eux-mêmes la continuité de session au niveau applicatif.
 
 ## Pièges fréquents
 
