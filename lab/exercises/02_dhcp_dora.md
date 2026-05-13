@@ -69,14 +69,19 @@ Que se passerait-il avec n'importe quelle autre adresse&nbsp;?
 
 > 💬 **Votre réponse :**
 >
-> _Remplacez ce texte par votre réponse._
+> Le client utilise 0.0.0.0 car il n'a pas encore d'adresse IP configurée — c'est précisément l'objet du Discover. 0.0.0.0 est l'adresse conventionnelle signifiant "source inconnue/non configurée" en RFC 2131. Si le client utilisait une > IP quelconque inventée (ex: 192.168.0.1), deux problèmes : premièrement elle pourrait entrer en conflit avec un équipement existant, deuxièmement les routeurs refuseraient de router un paquet source avec une IP non attribuée (filtrage anti-spoofing).
 
 **Question 2.** Pourquoi le **Request** est-il **rediffusé en broadcast**
 alors que le client connaît déjà l'IP du serveur après l'Offer&nbsp;?
 
 > 💬 **Votre réponse :**
 >
-> _Remplacez ce texte par votre réponse._
+> Même si le client connaît l'IP du serveur après l'Offer, il envoie le Request en broadcast pour deux raisons :
+>
+> 1. Informer les autres serveurs DHCP du réseau qu'il a choisi une offre (ils doivent libérer leurs offres concurrentes)
+> 2. Le client n'a toujours pas d'IP configurée — techniquement il ne peut pas encore faire de l'unicast IP routable
+>
+> Le broadcast permet donc une communication "propre" même en environnement multi-serveurs.
 
 **Question 3.** À quoi sert le **transaction ID (xid)** présent dans les
 4 paquets&nbsp;? Que se passerait-il s'il était omis dans un réseau avec
@@ -84,7 +89,7 @@ plusieurs serveurs DHCP&nbsp;?
 
 > 💬 **Votre réponse :**
 >
-> _Remplacez ce texte par votre réponse._
+> Le xid (transaction ID) est un nombre aléatoire 32 bits généré par le client au début de chaque échange DORA. Il permet d'associer les réponses du serveur à la bonne demande du bon client. Sans xid, dans un réseau avec plusieurs serveurs DHCP et plusieurs clients, un client ne saurait pas si un OFFER reçu répond à son DISCOVER ou à celui d'un voisin. Avec plusieurs serveurs, deux OFFER arriveraient avec des IP différentes — le xid garantit que le client traite uniquement les réponses qui lui sont destinées.
 
 **Question 4.** Que renvoie le serveur si vous demandez explicitement une
 adresse hors du pool (essayez `dhclient -v -s 172.20.1.99 eth0`)&nbsp;?
@@ -92,14 +97,16 @@ Justifiez.
 
 > 💬 **Votre réponse :**
 >
-> _Remplacez ce texte par votre réponse._
+> <img width="2037" height="518" alt="image" src="https://github.com/user-attachments/assets/9a15dc0c-10d0-47c4-8c68-cdaf80d83097" />
+
+> Le serveur répond avec un DHCPNAK (option 53 = 6). Le pool configuré est 172.20.1.100 -- 172.20.1.200 (visible dans tes logs). L'adresse 172.20.1.99 est en dehors du pool : le serveur ne peut pas la confirmer et rejette la demande par un NAK pour forcer le client à recommencer un DISCOVER depuis zéro.
 
 **Question 5.** La directive `dhcp-authoritative` est active sur notre
 serveur. Quel est son effet **comportemental** sur les NAK&nbsp;?
 
 > 💬 **Votre réponse :**
 >
-> _Remplacez ce texte par votre réponse._
+> Sans cette directive, si un client arrive avec une adresse d'un réseau inconnu, le serveur ignore silencieusement le REQUEST (comportement prudent). Avec dhcp-authoritative, le serveur se déclare autoritaire sur son réseau : il répond immédiatement par un DHCPNAK à tout REQUEST suspect (adresse incorrecte, réseau incohérent). Cela accélère la reconvergence : le client ne patiente pas le timeout, il recommence immédiatement un nouveau DORA.
 
 ### 4. Renouvellement de bail (T1/T2)
 
@@ -109,4 +116,12 @@ un rebind T2 (destinataire du paquet, comportement attendu).
 
 > 💬 **Votre réponse :**
 >
-> _Remplacez ce texte par votre réponse._
+> D'après tes logs : lease = 12h, T1 = 6h, T2 = 10h30
+>
+> À T1 (6h) — Renouvellement unicast : le client envoie un DHCPREQUEST directement au serveur qui lui a attribué le bail (unicast vers 172.20.1.2). C'est un échange discret entre les deux. Si le serveur répond ACK, le bail est renouvelé pour 12h. Si le serveur ne répond pas (down), le client attend T2.
+> À T2 (10h30) — Rebind broadcast : le client n'a toujours pas réussi à renouveler. Il envoie un DHCPREQUEST en broadcast (255.255.255.255) pour tenter de se faire prendre en charge par n'importe quel serveur DHCP disponible sur le réseau. C'est le mécanisme de secours. Si aucun serveur ne répond avant la fin du bail (12h), le client perd son IP et recommence un DORA complet.
+> 0h        6h (T1)          10h30 (T2)        12h (expiry)
+|---------|----------------|-----------------|
+          ↑ RENOUVELLEMENT  ↑ REBIND          ↑ PERTE IP
+          unicast vers      broadcast vers    nouveau DORA
+          172.20.1.2        255.255.255.255
