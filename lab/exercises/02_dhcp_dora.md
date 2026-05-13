@@ -126,11 +126,13 @@ un rebind T2 (destinataire du paquet, comportement attendu).
 > Lease = 12h | T1 = 6h (renouvellement) | T2 = 10h30 (rebind)
 >
 >À T1 (6h)   → DHCPREQUEST unicast vers 172.20.1.2
-               Si ACK : bail renouvelé pour 12h
-               Si pas de réponse : on attend T2
-
+>               Si ACK : bail renouvelé pour 12h
+>               Si pas de réponse : on attend T2
+>
 >À T2 (10h30)→ DHCPREQUEST broadcast vers 255.255.255.255
-               N'importe quel serveur DHCP peut répondre
-               Si pas de réponse : on attend l'expiry
-
+>               N'importe quel serveur DHCP peut répondre
+>               Si pas de réponse : on attend l'expiry
+>
 >À 12h       → IP libérée, le client repart d'un DORA complet
+>
+> <img width="1440" height="520" alt="image" src="https://github.com/user-attachments/assets/a6b9da23-4e63-4b78-87e3-0bdcb41e88c5" />
