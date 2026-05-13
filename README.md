@@ -28,6 +28,10 @@ Difficulté : Faible (~10 minutes)
 ---------------------------------------------------
 
 Rendez-vous sur **https://www.pythonanywhere.com/**, créez un compte, puis un serveur Web **Flask 3.13**.
+```bash
+git clone https://github.com/anbbch/ATELIER_RESEAU.git myapp
+```
+
 
 ---------------------------------------------------------------------------------------------
 🧩 Séquence 3 : GitHub Actions (Industrialisation Continue)
