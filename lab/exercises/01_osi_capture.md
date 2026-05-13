@@ -65,10 +65,17 @@ docker exec lab_client capinfos /tmp/http.pcap
 ```bash
 # Vue compacte : une ligne par paquet (utile pour repérer les n° de frames)
 docker exec lab_client tshark -r /tmp/http.pcap
+```
+<img width="1461" height="750" alt="image" src="https://github.com/user-attachments/assets/8072483c-c764-45b6-bdb7-c62dff393b38" />
 
+```bash
 # Vue détaillée d'un paquet précis (ex. la requête GET = frame n°4)
 docker exec lab_client tshark -r /tmp/http.pcap -V -Y 'frame.number == 4'
+```
+<img width="1440" height="876" alt="image" src="https://github.com/user-attachments/assets/60dba9aa-549d-44cd-84b9-a48edfbfd9c2" />
+<img width="1454" height="873" alt="image" src="https://github.com/user-attachments/assets/e6a45959-2cd3-422c-99ae-47fd7524f62f" />
 
+```bash
 # Vue détaillée complète (pager : utilisez 'q' pour quitter)
 docker exec -it lab_client sh -c "tshark -r /tmp/http.pcap -V | less"
 ```
@@ -103,6 +110,9 @@ trame portant `GET /` (ligne marquée `HTTP 141 GET / HTTP/1.1`).
 ./lab/exercises/osi_inspect.py 1         # trame n°1 — le SYN du handshake
 ./lab/exercises/osi_inspect.py 8         # trame n°8 — la réponse 200 OK
 ```
+<img width="2054" height="1121" alt="image" src="https://github.com/user-attachments/assets/2cdf3417-4073-4488-a078-da295168e650" />
+<img width="2033" height="824" alt="image" src="https://github.com/user-attachments/assets/c67f0615-9cea-4a6d-a0b2-bf713abe13f0" />
+<img width="2033" height="995" alt="image" src="https://github.com/user-attachments/assets/774bf443-b50a-4a9d-8892-7837dad32918" />
 
 Le script affiche, pour chaque couche OSI **présente** dans la trame, les
 champs clés avec **3 informations** :
