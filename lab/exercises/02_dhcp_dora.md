@@ -89,7 +89,7 @@ plusieurs serveurs DHCP&nbsp;?
 
 > 💬 **Votre réponse :**
 >
-> Le xid (transaction ID) est un nombre aléatoire 32 bits généré par le client au début de chaque échange DORA. Il permet d'associer les réponses du serveur à la bonne demande du bon client. Sans xid, dans un réseau avec plusieurs serveurs DHCP et plusieurs clients, un client ne saurait pas si un OFFER reçu répond à son DISCOVER ou à celui d'un voisin. Avec plusieurs serveurs, deux OFFER arriveraient avec des IP différentes — le xid garantit que le client traite uniquement les réponses qui lui sont destinées.
+> Le xid (transaction ID) est un nombre aléatoire 32 bits généré par le client au début de chaque échange DORA. Il permet d'associer les réponses du serveur à la bonne demande du bon client. Sans xid, dans un réseau avec plusieurs serveurs DHCP et plusieurs clients, un client ne saurait pas si un OFFER reçu répond à son DISCOVER ou à celui d'un voisin. Avec plusieurs serveurs, deux OFFER arriveraient avec des IP différentes, le xid garantit que le client traite uniquement les réponses qui lui sont destinées.
 
 **Question 4.** Que renvoie le serveur si vous demandez explicitement une
 adresse hors du pool (essayez `dhclient -v -s 172.20.1.99 eth0`)&nbsp;?
@@ -106,7 +106,8 @@ serveur. Quel est son effet **comportemental** sur les NAK&nbsp;?
 
 > 💬 **Votre réponse :**
 >
-> Sans cette directive, si un client arrive avec une adresse d'un réseau inconnu, le serveur ignore silencieusement le REQUEST (comportement prudent). Avec dhcp-authoritative, le serveur se déclare autoritaire sur son réseau : il répond immédiatement par un DHCPNAK à tout REQUEST suspect (adresse incorrecte, réseau incohérent). Cela accélère la reconvergence : le client ne patiente pas le timeout, il recommence immédiatement un nouveau DORA.
+> Sans cette directive, si un client arrive avec une adresse d'un réseau inconnu, le serveur ignore silencieusement le REQUEST (comportement prudent).
+> Avec dhcp-authoritative, le serveur se déclare autoritaire sur son réseau : il répond immédiatement par un DHCPNAK à tout REQUEST suspect (adresse incorrecte, réseau incohérent). Cela accélère la reconvergence : le client ne patiente pas le timeout, il recommence immédiatement un nouveau DORA.
 
 ### 4. Renouvellement de bail (T1/T2)
 
@@ -119,9 +120,17 @@ un rebind T2 (destinataire du paquet, comportement attendu).
 > D'après tes logs : lease = 12h, T1 = 6h, T2 = 10h30
 >
 > À T1 (6h) — Renouvellement unicast : le client envoie un DHCPREQUEST directement au serveur qui lui a attribué le bail (unicast vers 172.20.1.2). C'est un échange discret entre les deux. Si le serveur répond ACK, le bail est renouvelé pour 12h. Si le serveur ne répond pas (down), le client attend T2.
+> 
 > À T2 (10h30) — Rebind broadcast : le client n'a toujours pas réussi à renouveler. Il envoie un DHCPREQUEST en broadcast (255.255.255.255) pour tenter de se faire prendre en charge par n'importe quel serveur DHCP disponible sur le réseau. C'est le mécanisme de secours. Si aucun serveur ne répond avant la fin du bail (12h), le client perd son IP et recommence un DORA complet.
-> 0h        6h (T1)          10h30 (T2)        12h (expiry)
-|---------|----------------|-----------------|
-          ↑ RENOUVELLEMENT  ↑ REBIND          ↑ PERTE IP
-          unicast vers      broadcast vers    nouveau DORA
-          172.20.1.2        255.255.255.255
+> 
+> Lease = 12h | T1 = 6h (renouvellement) | T2 = 10h30 (rebind)
+>
+>À T1 (6h)   → DHCPREQUEST unicast vers 172.20.1.2
+               Si ACK : bail renouvelé pour 12h
+               Si pas de réponse : on attend T2
+
+>À T2 (10h30)→ DHCPREQUEST broadcast vers 255.255.255.255
+               N'importe quel serveur DHCP peut répondre
+               Si pas de réponse : on attend l'expiry
+
+>À 12h       → IP libérée, le client repart d'un DORA complet
