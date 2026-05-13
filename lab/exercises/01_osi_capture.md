@@ -173,10 +173,10 @@ capture** (champ, valeur observée). Justifiez en 1-2 phrases.
 | 7 — Application    | _ex. méthode HTTP_              | `GET / HTTP/1.1 (trame 4)` |
 | 6 — Présentation   | _ex. encodage / Content-Type_   | `text/html (trame 8)`|
 | 5 — Session        | _ex. Keep-Alive, cookies_       |`Chaque curl ouvre une nouvelle connexion TCP (trames 1-12, 13-22, 23-30) - absence de keep-alive`|
-| 4 — Transport      | _ex. port TCP, flags_           | …              |
-| 3 — Réseau         | _ex. IP source / destination_   | …              |
-| 2 — Liaison        | _ex. adresses MAC_              | …              |
-| 1 — Physique       | _non visible — pourquoi&nbsp;?_ | …              |
+| 4 — Transport      | _ex. port TCP, flags_           | `34550 → 80 [SYN] (trame 1), [FIN, ACK] (trame 10)`              |
+| 3 — Réseau         | _ex. IP source / destination_   | `172.20.1.50 → 172.20.0.10`              |
+| 2 — Liaison        | _ex. adresses MAC_              | `02:42:ac:...`              |
+| 1 — Physique       | _non visible — pourquoi&nbsp;?_ | `—`              |
 
 ## Questions de réflexion
 
