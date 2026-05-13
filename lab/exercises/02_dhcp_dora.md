@@ -42,10 +42,10 @@ Complétez en vous appuyant sur **votre propre capture**&nbsp;:
 
 | Étape       | Émetteur (IP src) | Destinataire (IP dst) | MAC src / dst | Options DHCP notables |
 | ----------- | ----------------- | --------------------- | ------------- | --------------------- |
-| 1. Discover | `0.0.0.0`         | `255.255.255.255`     | …             | option 53 = …, option 55 = … |
-| 2. Offer    | …                 | …                     | …             | … |
-| 3. Request  | …                 | …                     | …             | … |
-| 4. ACK      | …                 | …                     | …             | … |
+| 1. Discover | `0.0.0.0`         | `255.255.255.255`     | `0a:46:31:0a:e8:31 → ff:ff:ff:ff:ff:ff`| option 53 =DHCPDISCOVER, opt 55 = liste des options demandées (1,28,2,3,15,6,119,12,44,47,26,121,42) |
+| 2. Offer    | `172.20.1.2`      | `172.20.1.168`        | `MAC serveur → 0a:46:31:0a:e8:31`| opt 53 = DHCPOFFER, opt 54 = server-id 172.20.1.2, opt 51 = lease 12h, opt 58 = T1 6h, opt 59 = T2 10h30, opt 1 = netmask 255.255.255.0, opt 3 = router 172.20.1.254, opt 6 = dns 1.1.1.1, 8.8.8.8, opt 15 = domain lab.local |
+| 3. Request  | `0.0.0.0`         | `255.255.255.255`     | `0a:46:31:0a:e8:31 → ff:ff:ff:ff:ff:ff`|opt 53 = DHCPREQUEST, opt 54 = server-id 172.20.1.2, opt 50 = requested IP 172.20.1.168  |
+| 4. ACK      | `172.20.1.2`      | `172.20.1.168`        | `MAC serveur → 0a:46:31:0a:e8:31`| opt 53 = DHCPACK, opt 54 = server-id 172.20.1.2, opt 51 = lease 12h, opt 58 = T1 6h, opt 59 = T2 10h30, opt 1 = netmask, opt 28 = broadcast 172.20.1.255, opt 12 = hostname client, opt 15 = lab.local, opt 6 = dns, opt 3 = router |
 
 ### 2. Configuration finale du client
 
