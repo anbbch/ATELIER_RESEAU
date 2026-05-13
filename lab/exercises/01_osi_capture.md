@@ -140,17 +140,28 @@ NAT (exercice 3), pointez-le vers le bon conteneur et le bon fichier :
 ### Travail demandé avec ce script
 
 1. Lancez `./lab/exercises/osi_inspect.py` pour obtenir la liste des trames.
-2. Identifiez **une trame contenant du HTTP** (typiquement la requête `GET /`)
+Commande utilisé : python3 osi_inspect.py
+<img width="2028" height="943" alt="image" src="https://github.com/user-attachments/assets/d60d3cbf-902d-45ca-8abb-39a13f86dea9" />
+
+
+3. Identifiez **une trame contenant du HTTP** (typiquement la requête `GET /`)
    et **une trame de contrôle TCP** (SYN, ACK seul, ou FIN).
-3. Lancez le script avec le n° de chaque trame et **copiez la sortie**
+Commande utilisé : python3 osi_inspect.py 4
+<img width="2040" height="1079" alt="image" src="https://github.com/user-attachments/assets/2671939f-c712-4547-b7f4-6139f7c3f969" />
+
+5. Lancez le script avec le n° de chaque trame et **copiez la sortie**
    dans le README de votre fork (bloc de code).
-4. Pour chacune des deux trames, **comptez et nommez** les couches OSI
+Commande utilisé : python3 osi_inspect.py
+
+7. Pour chacune des deux trames, **comptez et nommez** les couches OSI
    visibles (utilisez la ligne `Pile présente : …` en en-tête). Expliquez
    en 1 phrase pourquoi la couche 7 est absente sur la trame de contrôle TCP.
+Commande utilisé : python3 osi_inspect.py 1
+<img width="2042" height="878" alt="image" src="https://github.com/user-attachments/assets/a59a967d-0b54-46af-a05c-912ca9134c4c" />
 
 > 💬 **Votre réponse (sorties du script + analyse) :**
 >
-> _Remplacez ce texte par votre réponse._
+> Voir au dessus
 
 ## À rendre — répondez directement dans ce fichier
 
@@ -159,9 +170,9 @@ capture** (champ, valeur observée). Justifiez en 1-2 phrases.
 
 | Couche OSI         | Élément observé dans la capture | Valeur exemple |
 | ------------------ | ------------------------------- | -------------- |
-| 7 — Application    | _ex. méthode HTTP_              | `GET /whoami HTTP/1.1` |
-| 6 — Présentation   | _ex. encodage / Content-Type_   | …              |
-| 5 — Session        | _ex. Keep-Alive, cookies_       | …              |
+| 7 — Application    | _ex. méthode HTTP_              | `GET / HTTP/1.1 (trame 4)` |
+| 6 — Présentation   | _ex. encodage / Content-Type_   | `text/html (trame 8)`|
+| 5 — Session        | _ex. Keep-Alive, cookies_       |`Chaque curl ouvre une nouvelle connexion TCP (trames 1-12, 13-22, 23-30) - absence de keep-alive`|
 | 4 — Transport      | _ex. port TCP, flags_           | …              |
 | 3 — Réseau         | _ex. IP source / destination_   | …              |
 | 2 — Liaison        | _ex. adresses MAC_              | …              |
@@ -174,8 +185,7 @@ capture** (champ, valeur observée). Justifiez en 1-2 phrases.
 vous apprend cette observation sur la portée de chaque couche&nbsp;?
 
 > 💬 **Votre réponse :**
->
-> _Remplacez ce texte par votre réponse._
+> La couche 2 (Ethernet) ne fonctionne que sur le lien local, entre deux équipements directement connectés. Quand le client envoie un paquet vers 172.20.0.10, il le dépose sur son lien local vers le routeur : la MAC destination est donc celle du routeur NAT (la passerelle). Le routeur recrée une nouvelle trame L2 pour le segment suivant. Chaque couche a une portée différente : L3 est bout-en-bout (IP reste celle du client), L2 est saut-par-saut (MAC change à chaque routeur).
 
 **Question 2.** Vous capturez sur `eth0` du client (côté LAN). Dans votre
 trace, l'**IP source** sortante est `172.20.1.50`. Pourtant, `curl /whoami`
@@ -184,8 +194,11 @@ et indiquez **où** il faudrait capturer pour voir l'IP réécrite.
 *Astuce&nbsp;:* `docker exec lab_nat_router tcpdump -i any -nn -c 10 host 172.20.0.10`.
 
 > 💬 **Votre réponse :**
+> C'est le NAT (MASQUERADE) en action. Le routeur réécrit l'IP source du paquet quand il le fait sortir vers le réseau "internet" : 172.20.1.50 (IP privée LAN) → 172.20.0.254 (IP publique du routeur). La réécriture a lieu sur l'interface de sortie du routeur (eth0 côté internet). Pour voir l'IP réécrite, il faut capturer sur le routeur NAT :
+bashdocker exec lab_nat_router tcpdump -i any -nn -c 10 host 172.20.0.10
 >
-> _Remplacez ce texte par votre réponse._
+> <img width="2045" height="694" alt="image" src="https://github.com/user-attachments/assets/97361177-eabe-4a8c-bf20-5a3d35a71e85" />
+
 
 **Question 3.** Lancez `curl -v https://...` vers un site HTTPS public
 (depuis l'hôte, pas le lab). Quelle couche change visiblement par
@@ -193,8 +206,7 @@ rapport au HTTP du lab&nbsp;? Quelles couches **disparaissent** de votre
 visibilité&nbsp;?
 
 > 💬 **Votre réponse :**
->
-> _Remplacez ce texte par votre réponse._
+> La couche 6 (Présentation) devient visible : TLS chiffre les données entre L4 et L7. Conséquence : les couches 7 et 5 disparaissent de ta visibilité dans tshark, tu vois TLSv1.3 Application Data au lieu de HTTP GET. Le contenu applicatif est opaque.
 
 **Question 4.** La couche 5 (Session) est très peu visible dans une
 capture HTTP/1.1. Donnez **deux mécanismes applicatifs** qui jouent le
@@ -202,8 +214,10 @@ rôle de la couche session, et expliquez pourquoi ils sont implémentés
 « plus haut »&nbsp;dans la pile.
 
 > 💬 **Votre réponse :**
->
-> _Remplacez ce texte par votre réponse._
+>  1. Connection: keep-alive maintient la connexion TCP ouverte entre plusieurs requêtes HTTP, évitant un nouveau handshake à chaque fois → rôle de maintien de session.
+2. Les cookies HTTP permettent de reprendre une "session utilisateur" entre des requêtes distinctes (authentification, panier...) → rôle d'identification et de reprise de session.
+
+Ils sont implémentés plus haut (L7) car TCP/IP n'a pas de couche session native : la suite Internet a été conçue avec seulement 4 couches, et les concepteurs d'applications ont dû gérer eux-mêmes la continuité de session au niveau applicatif.
 
 ## Pièges fréquents
 
