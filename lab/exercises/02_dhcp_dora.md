@@ -22,6 +22,7 @@ Côté `client`, déclenchez une nouvelle demande de bail&nbsp;:
 ```bash
 docker exec lab_client bash -c "dhclient -r eth0 2>/dev/null; dhclient -v eth0"
 ```
+<img width="1979" height="416" alt="image" src="https://github.com/user-attachments/assets/e99033fb-528b-4867-b942-8b266e347fb0" />
 
 Observez les **4 paquets** DORA dans la capture, puis arrêtez tcpdump (Ctrl+c).
 
@@ -30,6 +31,47 @@ Affichez aussi les journaux applicatifs du serveur&nbsp;:
 ```bash
 docker logs --tail 40 lab_dhcp_server
 ```
+@anbbch ➜ /workspaces/ATELIER_RESEAU/lab/exercises (main) $ docker logs --tail 40 lab_dhcp_server
+dnsmasq-dhcp[1]: 3552256575 client provides name: client
+dnsmasq-dhcp[1]: 3552256575 DHCPDISCOVER(eth0) 0a:46:31:0a:e8:31 
+dnsmasq-dhcp[1]: 3552256575 tags: eth0
+dnsmasq-dhcp[1]: 3552256575 DHCPOFFER(eth0) 172.20.1.168 0a:46:31:0a:e8:31 
+dnsmasq-dhcp[1]: 3552256575 requested options: 1:netmask, 28:broadcast, 2:time-offset, 3:router, 
+dnsmasq-dhcp[1]: 3552256575 requested options: 15:domain-name, 6:dns-server, 119:domain-search, 
+dnsmasq-dhcp[1]: 3552256575 requested options: 12:hostname, 44:netbios-ns, 47:netbios-scope, 
+dnsmasq-dhcp[1]: 3552256575 requested options: 26:mtu, 121:classless-static-route, 42:ntp-server
+dnsmasq-dhcp[1]: 3552256575 next server: 172.20.1.2
+dnsmasq-dhcp[1]: 3552256575 sent size:  1 option: 53 message-type  2
+dnsmasq-dhcp[1]: 3552256575 sent size:  4 option: 54 server-identifier  172.20.1.2
+dnsmasq-dhcp[1]: 3552256575 sent size:  4 option: 51 lease-time  12h
+dnsmasq-dhcp[1]: 3552256575 sent size:  4 option: 58 T1  6h
+dnsmasq-dhcp[1]: 3552256575 sent size:  4 option: 59 T2  10h30m
+dnsmasq-dhcp[1]: 3552256575 sent size:  4 option:  1 netmask  255.255.255.0
+dnsmasq-dhcp[1]: 3552256575 sent size:  4 option: 28 broadcast  172.20.1.255
+dnsmasq-dhcp[1]: 3552256575 sent size:  9 option: 15 domain-name  lab.local
+dnsmasq-dhcp[1]: 3552256575 sent size:  8 option:  6 dns-server  1.1.1.1, 8.8.8.8
+dnsmasq-dhcp[1]: 3552256575 sent size:  4 option:  3 router  172.20.1.254
+dnsmasq-dhcp[1]: 3552256575 available DHCP range: 172.20.1.100 -- 172.20.1.200
+dnsmasq-dhcp[1]: 3552256575 client provides name: client
+dnsmasq-dhcp[1]: 3552256575 DHCPREQUEST(eth0) 172.20.1.168 0a:46:31:0a:e8:31 
+dnsmasq-dhcp[1]: 3552256575 tags: eth0
+dnsmasq-dhcp[1]: 3552256575 DHCPACK(eth0) 172.20.1.168 0a:46:31:0a:e8:31 client
+dnsmasq-dhcp[1]: 3552256575 requested options: 1:netmask, 28:broadcast, 2:time-offset, 3:router, 
+dnsmasq-dhcp[1]: 3552256575 requested options: 15:domain-name, 6:dns-server, 119:domain-search, 
+dnsmasq-dhcp[1]: 3552256575 requested options: 12:hostname, 44:netbios-ns, 47:netbios-scope, 
+dnsmasq-dhcp[1]: 3552256575 requested options: 26:mtu, 121:classless-static-route, 42:ntp-server
+dnsmasq-dhcp[1]: 3552256575 next server: 172.20.1.2
+dnsmasq-dhcp[1]: 3552256575 sent size:  1 option: 53 message-type  5
+dnsmasq-dhcp[1]: 3552256575 sent size:  4 option: 54 server-identifier  172.20.1.2
+dnsmasq-dhcp[1]: 3552256575 sent size:  4 option: 51 lease-time  12h
+dnsmasq-dhcp[1]: 3552256575 sent size:  4 option: 58 T1  6h
+dnsmasq-dhcp[1]: 3552256575 sent size:  4 option: 59 T2  10h30m
+dnsmasq-dhcp[1]: 3552256575 sent size:  4 option:  1 netmask  255.255.255.0
+dnsmasq-dhcp[1]: 3552256575 sent size:  4 option: 28 broadcast  172.20.1.255
+dnsmasq-dhcp[1]: 3552256575 sent size:  6 option: 12 hostname  client
+dnsmasq-dhcp[1]: 3552256575 sent size:  9 option: 15 domain-name  lab.local
+dnsmasq-dhcp[1]: 3552256575 sent size:  8 option:  6 dns-server  1.1.1.1, 8.8.8.8
+dnsmasq-dhcp[1]: 3552256575 sent size:  4 option:  3 router  172.20.1.254
 
 ## À rendre — répondez directement dans ce fichier
 
